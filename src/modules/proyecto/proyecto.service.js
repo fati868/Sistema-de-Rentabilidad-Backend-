@@ -203,17 +203,26 @@ const updateProyecto = async (proyectoId, empresaId, data) => {
 
 const desactivarProyecto = async (proyectoId, empresaId) => {
   const proyecto = await proyectoRepository.findById(proyectoId);
+
   if (!proyecto) {
-    const err = new Error("Proyecto no encontrado");
-    err.status = 404;
-    throw err;
+    throw Object.assign(new Error('Proyecto no encontrado'), { status: 404 });
   }
+
   if (proyecto.id_empresa !== empresaId) {
-    const err = new Error("No tienes permisos para desactivar este proyecto");
-    err.status = 403;
-    throw err;
+    throw Object.assign(
+      new Error('No tienes permisos para desactivar este proyecto'),
+      { status: 403 }
+    );
   }
-  return await proyectoRepository.deactivate(proyectoId);
+
+  if (!proyecto.is_active) {
+    throw Object.assign(
+      new Error('El proyecto ya está desactivado'),
+      { status: 400 }
+    );
+  }
+
+  return await proyectoRepository.desactivar(proyectoId);
 };
 
 const getEmpleadosProyecto = async (proyectoId, empresaId) => {

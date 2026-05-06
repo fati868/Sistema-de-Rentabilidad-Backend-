@@ -129,13 +129,20 @@ const updateProyecto = async (req, res, next) => {
 
 const desactivarProyecto = async (req, res, next) => {
   try {
-    const userDB = await resolveEmpresa(req, res);
-    if (!userDB) return;
-    const result = await proyectoService.desactivarProyecto(parseInt(req.params.id, 10), userDB.id_empresa);
-    return res.status(200).json({ success: true, message: "Proyecto desactivado correctamente", data: result });
-  } catch (err) {
-    if (err.status) return res.status(err.status).json({ success: false, message: err.message });
-    next(err);
+    const proyectoId = parseInt(req.params.id, 10);
+    const empresaId = req.empresaId;
+
+    const proyecto = await proyectoService.desactivarProyecto(
+      proyectoId,
+      empresaId
+    );
+
+    return res.status(200).json({
+      success: true,
+      data: proyecto
+    });
+  } catch (error) {
+    next(error);
   }
 };
 

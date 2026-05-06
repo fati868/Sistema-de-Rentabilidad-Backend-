@@ -23,14 +23,14 @@ router.get("/", auth, role("propietario"), empresa, proyectoController.getProyec
 // POST /proyectos
 router.post("/", auth, role("propietario"), empresa, createProyectoValidation, proyectoController.createProyecto);
 
-// GET /proyectos/id
+// GET /proyectos/:id
 router.get("/:id", auth, role("propietario"), empresa, proyectoIdParamValidation, proyectoController.getProyectoById);
 
-// PUT /proyectos
-router.put("/:id", auth, role("propietario"), empresa, proyectoIdParamValidation, updateProyectoValidation, proyectoController.updateProyecto);
+// PUT /proyectos/:id/desactivar (antes de PUT /:id para evitar ambigüedad)
+router.put("/:id/desactivar", auth, role("propietario"), empresa, proyectoIdParamValidation, proyectoController.desactivarProyecto);
 
-// PUT /proyectos/id
-router.put("/:id/desactivar", auth, role("propietario"), proyectoController.desactivarProyecto);
+// PUT /proyectos/:id
+router.put("/:id", auth, role("propietario"), empresa, proyectoIdParamValidation, updateProyectoValidation, proyectoController.updateProyecto);
 
 router.get("/:id/empleados", auth, role("propietario", "lider"), proyectoController.getEmpleadosProyecto);
 router.get("/:id/horas-resumen", auth, role("propietario", "lider"), proyectoController.getHorasResumenProyecto);

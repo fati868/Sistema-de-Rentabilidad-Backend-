@@ -371,22 +371,15 @@ const update = async (proyectoId, data) => {
   }
 };
 
-/* ─── deactivate / activate / hardDelete ───────────────────────────────── */
-const deactivate = async (proyectoId) => {
+const desactivar = async (proyectoId) => {
   const result = await pool.query(
-    `UPDATE proyecto SET is_active = false WHERE id_proyecto = $1
-     RETURNING id_proyecto, nombre, is_active`,
+    `UPDATE proyecto
+     SET is_active = false
+     WHERE id_proyecto = $1
+     RETURNING *`,
     [proyectoId]
   );
-  return result.rows[0];
-};
 
-const activate = async (proyectoId) => {
-  const result = await pool.query(
-    `UPDATE proyecto SET is_active = true WHERE id_proyecto = $1
-     RETURNING id_proyecto, nombre, is_active`,
-    [proyectoId]
-  );
   return result.rows[0];
 };
 
@@ -486,8 +479,7 @@ module.exports = {
   findUsuariosByIds,
   create,
   update,
-  deactivate,
-  activate,
+  desactivar,
   hardDelete,
   findEmpleadosByProyecto,
   syncEmpleados,
