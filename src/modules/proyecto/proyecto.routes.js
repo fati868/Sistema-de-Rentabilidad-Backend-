@@ -18,7 +18,7 @@ const empresa = require('../middlewares/empresaMiddleware');
 
 // Rutas de propietario (CRUD completo) — lider tiene acceso de lectura a detalles
 // GET /proyectos
-router.get("/", auth, role("propietario"), empresa, proyectoController.getProyectos);
+router.get("/", auth, role("propietario", "lider"), empresa, proyectoController.getProyectos);
 
 // POST /proyectos
 router.post("/", auth, role("propietario"), empresa, createProyectoValidation, proyectoController.createProyecto);
@@ -34,8 +34,5 @@ router.put("/:id", auth, role("propietario"), empresa, proyectoIdParamValidation
 
 router.get("/:id/empleados", auth, role("propietario", "lider"), proyectoController.getEmpleadosProyecto);
 router.get("/:id/horas-resumen", auth, role("propietario", "lider"), proyectoController.getHorasResumenProyecto);
-router.put("/:id/activar", auth, role("propietario"), proyectoController.activarProyecto);
-
-router.delete("/:id", auth, role("propietario"), proyectoController.eliminarProyecto);
 
 module.exports = router;

@@ -1,8 +1,11 @@
 const proyectoRepository = require("./proyecto.repository");
 const pool = require("../../config/db");
 
-const getProyectos = async (empresaId) => {
-  return await proyectoRepository.findByEmpresaId(empresaId);
+const getProyectos = async ({ empresaId, liderId = null }) => {
+  return await proyectoRepository.findAll({
+    empresaId,
+    liderId
+  });
 };
 
 const getMisProyectos = async (usuario) => {
