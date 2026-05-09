@@ -1,30 +1,23 @@
 const proyectoService = require("./proyecto.service");
 const usuarioRepository = require("../usuario/usuario.repository");
 
-const resolveEmpresa = async (req, res) => {
-  if (!req.user?.id_usuario) {
-    res.status(401).json({ success: false, message: "Usuario no autenticado" });
-    return null;
-  }
-  const userDB = await usuarioRepository.findById(req.user.id_usuario);
-  if (!userDB) {
-    res.status(404).json({ success: false, message: "Usuario no encontrado" });
-    return null;
-  }
-  if (!userDB.id_empresa) {
-    res.status(400).json({ success: false, message: "El usuario no tiene una empresa asociada" });
-    return null;
-  }
-  return userDB;
-};
-
 const getProyectos = async (req, res, next) => {
   try {
     const empresaId = req.empresaId; // viene del middleware
 
-    const proyectos = await proyectoService.getProyectos(empresaId);
+    const usuario = req.user;
 
-    // ✅ Caso: no hay proyectos registrados
+    let filtros = {
+      empresaId
+    };
+
+    // si es líder → filtrar sus proyectos
+    if (usuario.rol === 'lider') {
+      filtros.liderId = usuario.id_usuario;
+    }
+
+    const proyectos = await proyectoService.getProyectos(filtros);
+
     if (proyectos.length === 0) {
       return res.status(200).json({
         success: true,
@@ -33,7 +26,6 @@ const getProyectos = async (req, res, next) => {
       });
     }
 
-    // ✅ Caso: hay proyectos
     return res.status(200).json({
       success: true,
       data: proyectos
@@ -146,36 +138,33 @@ const desactivarProyecto = async (req, res, next) => {
   }
 };
 
+const finalizarProyecto = async (req, res, next) => {
+  try {
+
+    const proyectoId = parseInt(req.params.id, 10);
+
+    const proyecto = await proyectoService.finalizarProyecto({
+      proyectoId,
+      empresaId: req.empresaId,
+      liderId: req.user.id_usuario
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: proyecto
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getEmpleadosProyecto = async (req, res, next) => {
   try {
     const userDB = await resolveEmpresa(req, res);
     if (!userDB) return;
     const empleados = await proyectoService.getEmpleadosProyecto(parseInt(req.params.id, 10), userDB.id_empresa);
     return res.status(200).json({ success: true, data: empleados });
-  } catch (err) {
-    if (err.status) return res.status(err.status).json({ success: false, message: err.message });
-    next(err);
-  }
-};
-
-const activarProyecto = async (req, res, next) => {
-  try {
-    const userDB = await resolveEmpresa(req, res);
-    if (!userDB) return;
-    const result = await proyectoService.activarProyecto(parseInt(req.params.id, 10), userDB.id_empresa);
-    return res.status(200).json({ success: true, message: "Proyecto activado correctamente", data: result });
-  } catch (err) {
-    if (err.status) return res.status(err.status).json({ success: false, message: err.message });
-    next(err);
-  }
-};
-
-const eliminarProyecto = async (req, res, next) => {
-  try {
-    const userDB = await resolveEmpresa(req, res);
-    if (!userDB) return;
-    const result = await proyectoService.eliminarProyecto(parseInt(req.params.id, 10), userDB.id_empresa);
-    return res.status(200).json({ success: true, message: "Proyecto eliminado correctamente", data: result });
   } catch (err) {
     if (err.status) return res.status(err.status).json({ success: false, message: err.message });
     next(err);
@@ -202,8 +191,7 @@ module.exports = {
   createProyecto,
   updateProyecto,
   desactivarProyecto,
-  activarProyecto,
-  eliminarProyecto,
+  finalizarProyecto,
   getHorasResumenProyecto,
   getEmpleadosProyecto,
 };
