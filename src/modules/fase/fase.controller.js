@@ -1,11 +1,11 @@
-const fasesService = require("./fases.service");
+const faseService = require("./fase.service");
 
 const getFasesByProyecto = async (req, res, next) => {
   try {
     const proyectoId = parseInt(req.params.id, 10);
     const empresaId = req.empresaId; // viene del middleware
 
-    const fases = await fasesService.getFasesByProyecto(proyectoId, empresaId);
+    const fases = await faseService.getFaseByProyecto(proyectoId, empresaId);
 
     // no hay fases registradas
     if (fases.length === 0) {
@@ -27,7 +27,7 @@ const createFase = async (req, res, next) => {
     const proyectoId = parseInt(req.params.id, 10);
     const empresaId = req.empresaId; // viene del middleware
 
-    const nuevaFase = await fasesService.createFase(proyectoId, req.body, empresaId);
+    const nuevaFase = await faseService.createFase(proyectoId, req.body, empresaId);
     
     return res.status(201).json({ success: true, data: nuevaFase });
   } catch (err) {
@@ -40,7 +40,7 @@ const getFaseById = async (req, res, next) => {
     const faseId = parseInt(req.params.id, 10);
     const empresaId = req.empresaId; // viene del middleware
 
-    const fase = await fasesService.getFaseById(faseId, empresaId);
+    const fase = await faseService.getFaseById(faseId, empresaId);
     
     return res.status(200).json({ success: true, data: fase });
   } catch (err) {
@@ -53,7 +53,7 @@ const updateFase = async (req, res, next) => {
     const faseId = parseInt(req.params.id, 10);
     const empresaId = req.empresaId; // viene del middleware
 
-    const faseActualizada = await fasesService.updateFase(faseId, req.body, empresaId);
+    const faseActualizada = await faseService.updateFase(faseId, req.body, empresaId);
 
     return res.status(200).json({ success: true, data: faseActualizada });
   } catch (err) {

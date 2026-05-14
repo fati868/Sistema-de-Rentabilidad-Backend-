@@ -1,10 +1,10 @@
-const fasesRepository = require("./fases.repository");
+const faseRepository = require("./fase.repository");
 const verifyProyectoAccess = require("../../utils/verifyProyectoAccess")
 
 const getFasesByProyecto = async (proyectoId, empresaId) => {
   await verifyProyectoAccess(proyectoId, empresaId);
 
-  return await fasesRepository.findFasesByProyecto(proyectoId);
+  return await faseRepository.findFasesByProyecto(proyectoId);
 };
 
 const createFase = async (proyectoId, data, empresaId) => {
@@ -12,7 +12,7 @@ const createFase = async (proyectoId, data, empresaId) => {
 
   const nombreLimpio = data.nombre.trim();
 
-  const duplicado = await fasesRepository.findFaseByNombreAndProyecto(
+  const duplicado = await faseRepository.findFaseByNombreAndProyecto(
     nombreLimpio,
     proyectoId
   );
@@ -24,7 +24,7 @@ const createFase = async (proyectoId, data, empresaId) => {
     );
   }
 
-  return await fasesRepository.createFase({
+  return await faseRepository.createFase({
     id_proyecto: proyectoId,
     nombre: nombreLimpio,
     horas_estimadas: data.horas_estimadas,
@@ -32,7 +32,7 @@ const createFase = async (proyectoId, data, empresaId) => {
 };
 
 const getFaseById = async (faseId, empresaId) => {
-  const fase = await fasesRepository.findFaseById(faseId);
+  const fase = await faseRepository.findFaseById(faseId);
 
   if (!fase) {
     throw Object.assign(new Error("Fase no encontrada"), { status: 404 });
@@ -48,7 +48,7 @@ const getFaseById = async (faseId, empresaId) => {
 };
 
 const updateFase = async (faseId, data, empresaId) => {
-  const fase = await fasesRepository.findFaseById(faseId);
+  const fase = await faseRepository.findFaseById(faseId);
 
   if (!fase) {
     throw Object.assign(new Error("Fase no encontrada"), { status: 404 });
@@ -63,7 +63,7 @@ const updateFase = async (faseId, data, empresaId) => {
 
   if (data.nombre) {
     const nombreLimpio = data.nombre.trim();
-    const duplicado = await fasesRepository.findFaseByNombreAndProyecto(
+    const duplicado = await faseRepository.findFaseByNombreAndProyecto(
       nombreLimpio,
       fase.id_proyecto
     );
@@ -78,7 +78,7 @@ const updateFase = async (faseId, data, empresaId) => {
     data.nombre = nombreLimpio;
   }
 
-  return await fasesRepository.updateFase(faseId, data);
+  return await faseRepository.updateFase(faseId, data);
 };
 
 module.exports = {
