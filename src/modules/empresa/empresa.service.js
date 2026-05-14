@@ -72,23 +72,9 @@ const updateEmpresa = async ({ id, nombre, user }) => {
   return updated;
 };
 
-const deleteEmpresa = async ({ id, user }) => {
-  const empresa = await empresaRepository.findById(id);
-
-  if (!empresa) {
-    const error = new Error('Empresa no encontrada');
-    error.status = 404;
-    throw error;
-  }
-
-  const deleted = await empresaRepository.deleteById(id);
-  return deleted;
-};
-
 module.exports = {
   getEmpresas,
   createEmpresa,
   getEmpresaById,
-  updateEmpresa,
-  deleteEmpresa
+  updateEmpresa
 };
