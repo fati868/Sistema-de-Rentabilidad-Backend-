@@ -34,7 +34,7 @@ const findById = async (id) => {
     `SELECT f.id_fase, f.id_proyecto, f.nombre, f.horas_estimadas, p.id_empresa
      FROM fase f
      INNER JOIN proyecto p ON p.id_proyecto = f.id_proyecto
-     WHERE f.id_fase = $1 AND f.is_active = true`,
+     WHERE f.id_fase = $1 AND f.is_active = true AND p.is_active = true`,
     [id]
   );
   return res.rows[0] || null;
@@ -59,7 +59,7 @@ const update = async (id, data) => {
 module.exports = {
   findByProyecto,
   findByNombreAndProyecto,
-  findById,
   create,
+  findById,
   update
 };
