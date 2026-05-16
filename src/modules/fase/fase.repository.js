@@ -2,11 +2,17 @@ const pool = require("../../config/db");
 
 const findByProyecto = async (proyectoId) => {
   const res = await pool.query(
-    `SELECT id_fase, nombre, horas_estimadas
-     FROM fase
-     WHERE id_proyecto = $1 AND is_active = true`,
+    `SELECT f.id_fase, f.nombre, f.horas_estimadas, COALESCE(SUM(h.horas), 0) AS horas_trabajadas
+     FROM fase f
+     LEFT JOIN registro_horas h
+       ON h.id_fase = f.id_fase
+     WHERE f.id_proyecto = $1
+       AND f.is_active = true
+     GROUP BY f.id_fase, f.nombre, f.horas_estimadas
+     ORDER BY f.id_fase`,
     [proyectoId]
   );
+
   return res.rows;
 };
 
