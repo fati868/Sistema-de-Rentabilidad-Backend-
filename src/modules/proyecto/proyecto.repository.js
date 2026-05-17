@@ -238,6 +238,7 @@ const findById = async (proyectoId) => {
         p.fecha_fin_estimada,
         p.fecha_fin_real,
         p.id_servicio,
+        p.id_empresa,
         s.nombre AS servicio_nombre,
         p.id_lider,
         u.nombre AS lider_nombre,
