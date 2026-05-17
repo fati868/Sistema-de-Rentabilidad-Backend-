@@ -361,20 +361,22 @@ const finalizar = async (proyectoId) => {
   return result.rows[0];
 };
 
-/* ─── Resumen de horas por empleado ─────────────────────────────────────── */
+/* ─── Resumen de horas por fase ─────────────────────────────────────────── */
 const findHorasResumenByProyecto = async (proyectoId) => {
   const result = await pool.query(
     `SELECT
-        u.id_usuario,
-        u.nombre AS empleado_nombre,
-        SUM(rh.horas)  AS total_horas,
-        COUNT(rh.id_registro) AS total_registros,
-        STRING_AGG(DISTINCT rh.descripcion, ' | ') AS tareas
+        p.id_proyecto,
+        p.nombre AS proyecto_nombre,
+        f.id_fase,
+        f.nombre AS fase_nombre,
+        COALESCE(SUM(rh.horas), 0) AS total_horas,
+        COUNT(rh.id_registro) AS total_registros
      FROM registro_horas rh
-     INNER JOIN usuario u ON u.id_usuario = rh.id_empleado
+     INNER JOIN proyecto p ON p.id_proyecto = rh.id_proyecto
+     LEFT JOIN fase f ON f.id_fase = rh.id_fase
      WHERE rh.id_proyecto = $1
-     GROUP BY u.id_usuario, u.nombre
-     ORDER BY total_horas DESC`,
+     GROUP BY p.id_proyecto, p.nombre, f.id_fase, f.nombre
+     ORDER BY f.nombre NULLS LAST`,
     [proyectoId]
   );
   return result.rows;

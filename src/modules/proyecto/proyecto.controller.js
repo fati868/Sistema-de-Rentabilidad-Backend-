@@ -1,5 +1,4 @@
 const proyectoService = require("./proyecto.service");
-const usuarioRepository = require("../usuario/usuario.repository");
 
 const getProyectos = async (req, res, next) => {
   try {
@@ -140,9 +139,7 @@ const finalizarProyecto = async (req, res, next) => {
 
 const getHorasResumenProyecto = async (req, res, next) => {
   try {
-    const userDB = await resolveEmpresa(req, res);
-    if (!userDB) return;
-    const resumen = await proyectoService.getHorasResumenByProyecto(parseInt(req.params.id, 10), userDB.id_empresa);
+    const resumen = await proyectoService.getHorasResumenByProyecto(parseInt(req.params.id, 10), req.empresaId);
     return res.status(200).json({ success: true, data: resumen });
   } catch (err) {
     if (err.status) return res.status(err.status).json({ success: false, message: err.message });
